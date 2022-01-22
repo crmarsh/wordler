@@ -5,6 +5,7 @@ import sys
 from wordler_solver import *
 from word_lists import possible_answers, acceptable_guesses
 
+# fml https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
 
 CSI = "\033["
 OSC = "\033]"
@@ -35,6 +36,14 @@ def set_bg_color(rgb):
     sys.stdout.write(f"{CSI}48;2;{r};{g};{b}m")
 
 
+def cursor_up(n):
+    sys.stdout.write(f"{CSI}{n}A")
+
+
+def cursor_left(n):
+    sys.stdout.write(f"{CSI}{n}D")
+
+
 def print_guess(guesser: Guesser, guess: str):
     bg_colors = []
     letters = []
@@ -53,7 +62,7 @@ def print_guess(guesser: Guesser, guess: str):
 
     for i in range(5):
         set_bg_color(bg_colors[i])
-        print("   ", end="")
+        print("     ", end="")
 
         clear_color()
         print(" ", end="")
@@ -63,7 +72,7 @@ def print_guess(guesser: Guesser, guess: str):
     for i in range(5):
         set_bg_color(bg_colors[i])
         set_fg_color(LTGREY_RGB)
-        print(f" {letters[i]} ", end="")
+        print(f"  {letters[i]}  ", end="")
 
         clear_color()
         print(" ", end="")
@@ -72,7 +81,7 @@ def print_guess(guesser: Guesser, guess: str):
 
     for i in range(5):
         set_bg_color(bg_colors[i])
-        print("   ", end="")
+        print("     ", end="")
 
         clear_color()
         print(" ", end="")
@@ -92,6 +101,10 @@ def game():
         next_guess = None
         while next_guess not in acceptable_guesses:
             next_guess = input("guess: ")
+            cursor_up(1)
+            k = len(next_guess) + 8
+            print(" " * k, end="")
+            cursor_left(k)
         guess_number += 1
         correct = apply_guess(real_word, guesser, next_guess)
         print_guess(guesser, next_guess)
@@ -114,9 +127,6 @@ if __name__ == "__main__":
     set_fg_color(LTGREY_RGB)
     print(" W O R D L E \n")
 
-    # guesser = Guesser(None)
-    # apply_guess("prick", guesser, "crimp")
-    # print_guess(guesser, "crimp")
     game()
 
     clear_color()
